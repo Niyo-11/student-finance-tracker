@@ -278,5 +278,13 @@
     <footer>
       <p>&copy; 2025 Student Finance Tracker | Yonas Dejene</p>
     </footer>
+    <script type="module">
+        import { initForm } from './scripts/form.js';
+        
+        // Initialize form when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initForm();
+        });
+    </script>
   </body>
 </html>
