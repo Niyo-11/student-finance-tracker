@@ -21,36 +21,58 @@
     
     // EVENT LISTENERS
     
-    function attachEventListeners() {
-        // Add Transaction button
-        document.getElementById('add-transaction-btn').addEventListener('click', handleAddClick);
-        
-        // Cancel button
-        document.getElementById('cancel-form-btn').addEventListener('click', handleCancelClick);
-        
-        // Form submission
+function attachEventListeners() {
+    // Add Transaction button
+    const addBtn = document.getElementById('add-transaction-btn');
+    if (addBtn) {
+        addBtn.addEventListener('click', handleAddClick);
+    } else {
+        console.error('Add transaction button not found!');
+    }
+    
+    // Cancel button
+    const cancelBtn = document.getElementById('cancel-form-btn');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', handleCancelClick);
+    } else {
+        console.error('Cancel button not found!');
+    }
+    
+    // Form submission
+    if (UI.elements.transactionForm) {
         UI.elements.transactionForm.addEventListener('submit', handleFormSubmit);
-        
-        // Real-time validation
+    }
+    
+    // Real-time validation
+    if (UI.elements.descriptionInput) {
         UI.elements.descriptionInput.addEventListener('input', () => {
             validateField('description', UI.elements.descriptionInput.value);
         });
-        
+    }
+    
+    if (UI.elements.amountInput) {
         UI.elements.amountInput.addEventListener('input', () => {
             validateField('amount', UI.elements.amountInput.value);
         });
-        
+    }
+    
+    if (UI.elements.dateInput) {
         UI.elements.dateInput.addEventListener('change', () => {
             validateField('date', UI.elements.dateInput.value);
         });
-        
+    }
+    
+    if (UI.elements.categoryInput) {
         UI.elements.categoryInput.addEventListener('change', () => {
             validateField('category', UI.elements.categoryInput.value);
         });
-        
-        // Edit/Delete buttons (event delegation)
+    }
+    
+    // Edit/Delete buttons (event delegation)
+    if (UI.elements.transactionsContainer) {
         UI.elements.transactionsContainer.addEventListener('click', handleTableClick);
     }
+}
     
     
     // BUTTON HANDLERS
