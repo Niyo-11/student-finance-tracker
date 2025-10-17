@@ -1,7 +1,7 @@
 // validators.js - Regex validation patterns
 
 // 1. Description: No leading/trailing spaces, no double spaces
-export const descriptionRegex = /^\S(?:.*\S)?$/;
+export const descriptionRegex = /^\S+(\s\S+)*$/;
 
 // 2. Amount: Valid currency format (0 or positive number with max 2 decimals)
 export const amountRegex = /^(0|[1-9]\d*)(\.\d{1,2})?$/;
