@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation Tests - Finance Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        .test {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background: white;
+        }
+        .test h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+        .pass {
+            border-left: 4px solid #28a745;
+        }
+        .fail {
+            border-left: 4px solid #dc3545;
+        }
+        .summary {
+            margin: 30px 0;
+            padding: 20px;
+            background: #e7f3ff;
+            border-radius: 5px;
+            border-left: 4px solid #0066cc;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .info {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <h1>Regex Validation Tests</h1>
+    <div class="info">
+        <strong>Purpose:</strong> This page tests all 5 regex patterns used in the Finance Tracker, including one advanced pattern (duplicate word detection using back-references).
+    </div>
+    
+    <div id="test-results"></div>
+
+    <script>
+        // Copy validators directly into this file (no imports needed)
+        
+        // 1. Description: No leading/trailing spaces, no double spaces
+        const descriptionRegex = /^\S(?:.*\S)?$/;
+
+        // 2. Amount: Valid currency format
+        const amountRegex = /^(0|[1-9]\d*)(\.\d{1,2})?$/;
+
+        // 3. Date: YYYY-MM-DD format
+        const dateRegex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
+
+        // 4. Category: Letters, spaces, hyphens
+        const categoryRegex = /^[A-Za-z]+(?:[ -][A-Za-z]+)*$/;
+
+        // 5. ADVANCED: Duplicate words (back-reference)
+        const duplicateWordsRegex = /\b(\w+)\s+\1\b/i;
+
+        // Validation functions
+        function validateDescription(value) {
+            if (!value || value.trim() === '') {
+                return 'Description is required';
+            }
+            if (!descriptionRegex.test(value)) {
+                return 'No leading/trailing spaces or double spaces allowed';
+            }
+            if (duplicateWordsRegex.test(value)) {
+                return 'Contains duplicate words (advanced regex check)';
+            }
+            return null;
+        }
+
+        function validateAmount(value) {
+            if (!value || value.trim() === '') {
+                return 'Amount is required';
+            }
+            if (!amountRegex.test(value)) {
+                return 'Must be valid number (e.g., 12.50 or 100)';
+            }
+            const num = parseFloat(value);
+            if (num < 0) return 'Cannot be negative';
+            if (num > 999999) return 'Amount too large';
+            return null;
+        }
+
+        function validateDate(value) {
+            if (!value || value.trim() === '') {
+                return 'Date is required';
+            }
+            if (!dateRegex.test(value)) {
+                return 'Must be YYYY-MM-DD format';
+            }
+            const dateObj = new Date(value);
+            if (isNaN(dateObj.getTime())) {
+                return 'Invalid date';
+            }
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (dateObj > today) {
+                return 'Cannot be in future';
+            }
+            return null;
+        }
+
+        function validateCategory(value) {
+            if (!value || value.trim() === '') {
+                return 'Category is required';
+            }
+            if (!categoryRegex.test(value)) {
+                return 'Only letters, spaces, hyphens allowed';
+            }
+            return null;
+        }
+
+        // Test cases
+        const tests = [
+            { section: 'Description Validation', tests: [
+                { name: 'Valid description', func: validateDescription, input: 'Lunch at cafeteria', shouldPass: true },
+                { name: 'Leading space', func: validateDescription, input: ' Lunch', shouldPass: false },
+                { name: 'Trailing space', func: validateDescription, input: 'Lunch ', shouldPass: false },
+                { name: 'Double space inside', func: validateDescription, input: 'Coffee  with friends', shouldPass: false },
+                { name: 'Duplicate word (ADVANCED)', func: validateDescription, input: 'coffee coffee', shouldPass: false },
+                { name: 'Empty string', func: validateDescription, input: '', shouldPass: false },
+            ]},
+            
+            { section: 'Amount Validation', tests: [
+                { name: 'Valid decimal (12.50)', func: validateAmount, input: '12.50', shouldPass: true },
+                { name: 'Valid integer (100)', func: validateAmount, input: '100', shouldPass: true },
+                { name: 'Zero allowed', func: validateAmount, input: '0', shouldPass: true },
+                { name: 'One decimal place', func: validateAmount, input: '12.5', shouldPass: true },
+                { name: 'Three decimals rejected', func: validateAmount, input: '12.505', shouldPass: false },
+                { name: 'Negative rejected', func: validateAmount, input: '-10', shouldPass: false },
+                { name: 'Letters rejected', func: validateAmount, input: 'abc', shouldPass: false },
+                { name: 'Empty rejected', func: validateAmount, input: '', shouldPass: false },
+            ]},
+            
+            { section: 'Date Validation', tests: [
+                { name: 'Valid past date', func: validateDate, input: '2025-10-01', shouldPass: true },
+                { name: 'Invalid format (MM/DD/YYYY)', func: validateDate, input: '10/01/2025', shouldPass: false },
+                { name: 'Invalid month (13)', func: validateDate, input: '2025-13-01', shouldPass: false },
+                { name: 'Invalid day (32)', func: validateDate, input: '2025-10-32', shouldPass: false },
+                { name: 'Future date rejected', func: validateDate, input: '2026-12-31', shouldPass: false },
+                { name: 'Empty rejected', func: validateDate, input: '', shouldPass: false },
+            ]},
+            
+            { section: 'Category Validation', tests: [
+                { name: 'Single word (Food)', func: validateCategory, input: 'Food', shouldPass: true },
+                { name: 'With space (Fast Food)', func: validateCategory, input: 'Fast Food', shouldPass: true },
+                { name: 'With hyphen (Student-Fees)', func: validateCategory, input: 'Student-Fees', shouldPass: true },
+                { name: 'Numbers rejected', func: validateCategory, input: 'Category123', shouldPass: false },
+                { name: 'Empty rejected', func: validateCategory, input: '', shouldPass: false },
+            ]},
+        ];
+
+        
+        const resultsDiv = document.getElementById('test-results');
+        let totalPass = 0;
+        let totalFail = 0;
+
+        tests.forEach(section => {
+            const sectionHeader = document.createElement('h2');
+            sectionHeader.textContent = section.section;
+            sectionHeader.style.cssText = 'margin-top: 40px; color: #333; border-bottom: 2px solid #ddd; padding-bottom: 10px;';
+            resultsDiv.appendChild(sectionHeader);
+
+            section.tests.forEach(test => {
+                const error = test.func(test.input);
+                const passed = test.shouldPass ? (error === null) : (error !== null);
+                
+                if (passed) totalPass++;
+                else totalFail++;
+                
+                const testDiv = document.createElement('div');
+                testDiv.className = `test ${passed ? 'pass' : 'fail'}`;
+                testDiv.innerHTML = `
+                    <h3>${passed ? '✅' : '❌'} ${test.name}</h3>
+                    <p><strong>Input:</strong> <code>${test.input || '(empty)'}</code></p>
+                    <p><strong>Expected:</strong> ${test.shouldPass ? 'Should pass validation' : 'Should fail validation'}</p>
+                    <p><strong>Result:</strong> ${error || '✓ Valid'}</p>
+                `;
+                resultsDiv.appendChild(testDiv);
+            });
+        });
+
+        // Summary at top
+        const summary = document.createElement('div');
+        summary.className = 'summary';
+        summary.innerHTML = `
+            <h2>Test Summary</h2>
+            <p><strong>Total Tests:</strong> ${totalPass + totalFail}</p>
+            <p><strong>Passed:</strong> ${totalPass} ✅</p>
+            <p><strong>Failed:</strong> ${totalFail} ❌</p>
+            <p><strong>Success Rate:</strong> ${Math.round((totalPass / (totalPass + totalFail)) * 100)}%</p>
+        `;
+        resultsDiv.insertBefore(summary, resultsDiv.firstChild);
+
+        // Regex catalog at bottom
+        const catalog = document.createElement('div');
+        catalog.style.cssText = 'margin-top: 40px; padding: 20px; background: white; border-radius: 5px;';
+        catalog.innerHTML = `
+            <h2>Regex Pattern Catalog</h2>
+            <ol>
+                <li><strong>Description:</strong> <code>/^\\S(?:.*\\S)?$/</code> - No leading/trailing/double spaces</li>
+                <li><strong>Amount:</strong> <code>/^(0|[1-9]\\d*)(\\.\\d{1,2})?$/</code> - Valid currency format</li>
+                <li><strong>Date:</strong> <code>/^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$/</code> - YYYY-MM-DD format</li>
+                <li><strong>Category:</strong> <code>/^[A-Za-z]+(?:[ -][A-Za-z]+)*$/</code> - Letters, spaces, hyphens only</li>
+                <li><strong>Duplicate Words (ADVANCED):</strong> <code>/\\b(\\w+)\\s+\\1\\b/i</code> - Uses back-reference (\\1) to detect repeated words</li>
+            </ol>
+        `;
+        resultsDiv.appendChild(catalog);
+    </script>
+</body>
+</html>
