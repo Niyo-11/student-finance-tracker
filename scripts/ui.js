@@ -161,21 +161,24 @@ const UI = (function() {
     // STATS RENDERING
     
     function updateStats(stats) {
-        document.getElementById('total-count').textContent = stats.totalCount;
-        document.getElementById('total-amount').textContent = '$' + stats.totalAmount.toFixed(2);
-        document.getElementById('top-category').textContent = stats.topCategory || 'None';
-        
-        const topCategoryDetail = document.getElementById('top-category-amount');
-        if (topCategoryDetail) {
-            topCategoryDetail.textContent = stats.topCategoryAmount ? 
-                '$' + stats.topCategoryAmount.toFixed(2) : '';
-        }
-        
-        document.getElementById('last-7-days').textContent = '$' + stats.last7Days.toFixed(2);
-        
-        // Update budget status
-        updateBudgetStatus(stats.totalAmount);
+    const totalCount = document.getElementById('total-count');
+    const totalAmount = document.getElementById('total-amount');
+    const topCategory = document.getElementById('top-category');
+    const topCategoryAmount = document.getElementById('top-category-amount');
+    const last7Days = document.getElementById('last-7-days');
+    
+    if (totalCount) totalCount.textContent = stats.totalCount;
+    if (totalAmount) totalAmount.textContent = '$' + stats.totalAmount.toFixed(2);
+    if (topCategory) topCategory.textContent = stats.topCategory || 'None';
+    if (topCategoryAmount) {
+        topCategoryAmount.textContent = stats.topCategoryAmount ? 
+            '$' + stats.topCategoryAmount.toFixed(2) : '';
     }
+    if (last7Days) last7Days.textContent = '$' + stats.last7Days.toFixed(2);
+    
+    // Update budget status
+    updateBudgetStatus(stats.totalAmount);
+}
     
     function updateBudgetStatus(totalAmount) {
         const budgetCard = document.getElementById('budget-card');
