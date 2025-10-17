@@ -7,10 +7,7 @@ const State = (function() {
     let settings = { budgetCap: null, currencyRates: { EUR: 0.85, GBP: 0.73 } };
     let editingId = null;
     
-    
-    // ==========================================
     // TRANSACTION MANAGEMENT
-    // ==========================================
     
     function generateId() {
         return 'txn_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -72,9 +69,7 @@ const State = (function() {
     }
     
     
-    // ==========================================
     // EDITING STATE
-    // ==========================================
     
     function setEditingId(id) {
         editingId = id;
@@ -89,9 +84,7 @@ const State = (function() {
     }
     
     
-    // ==========================================
     // SETTINGS MANAGEMENT
-    // ==========================================
     
     function getSettings() {
         return { ...settings };
@@ -103,9 +96,7 @@ const State = (function() {
     }
     
     
-    // ==========================================
     // INITIALIZATION
-    // ==========================================
     
     function initialize() {
         transactions = Storage.loadTransactions();
@@ -114,9 +105,7 @@ const State = (function() {
     }
     
     
-    // ==========================================
     // PUBLIC API
-    // ==========================================
     
     return {
         initialize,
