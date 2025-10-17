@@ -1,13 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Student Finance Tracker</title>
-</head>
-<body>
-    <header></header>
-    <main></main>
-    <footer></footer>
-</body>
+    <link rel="stylesheet" href="./styles/main.css" />
+  </head>
+  <body>
+    <!-- user can use this to skip to the main content for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to the main content</a>
+
+    <header>
+      <h1>logo Student finance Tracker</h1>
+      <nav>
+        <ul>
+          <li><a href="#dashboard">Dashboard</a></li>
+          <li><a href="#transactions">Transactions</a></li>
+          <li><a href="#settings">Settings</a></li>
+          <li><a href="#about">About</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main id="main-content">
+      <!-- About Section -->
+      <section id="about">
+        <h2>About</h2>
+        <p>
+          Track your student expenses easily. Manage budgets, categorize
+          spending, and stay on top of your finances.
+        </p>
+        <p>
+          Contact:
+          <a href="mailto:ydejene@alustudent.com">ydejene@alustudent.com</a> |
+          GitHub:
+          <a href="https://github.com/ydejene" target="_blank">@ydejene</a>
+        </p>
+      </section>
+
+      <!-- Dashboard/Stats Section -->
+      <section id="dashboard">
+        <h2>Dashboard</h2>
+        <div class="stats-container">
+          <div class="stat-card">
+            <h3>Total Transactions</h3>
+            <p class="stat-value" id="total-count">0</p>
+          </div>
+          <div class="stat-card">
+            <h3>Total Spent</h3>
+            <p class="stat-value" id="total-amount">$0.00</p>
+          </div>
+          <div class="stat-card">
+            <h3>Top Catagory</h3>
+            <p class="stat-value" id="top-category">None</p>
+            <p class="stat-detail" id="top-category-amount">$0.00</p>
+          </div>
+          <div class="stat-card" id="budget-card">
+            <h3>Budget Cap</h3>
+            <p class="stat-value" id="budget-status">Not Set</p>
+            <p class="stat-detail">Set in settings</p>
+          </div>
+        </div>
+
+        <!-- Last 7 Days Chart -->
+        <div class="chart-container">
+          <h3>Last 7 Days Spendings</h3>
+          <div id="chart" class="bar-chart">
+            <!-- bars wiht Js -->
+            <div class="chart-placeholder">No data yet</div>
+          </div>
+        </div>
+
+        <!-- ARIA Live Alert for Budget -->
+        <div
+          role="status"
+          aria-live="polite"
+          id="budget-alert"
+          class="visually-hiddern"
+        ></div>
+      </section>
+
+      <!-- Transactions Section -->
+      <section id="transactions">
+        <h2>Transactions</h2>
+
+        <!-- Primary Action -->
+        <div class="action-bar">
+          <button id="add-transaction-btn" class="primary-btn">
+            + Add Transaction
+          </button>
+        </div>
+
+        <!-- Data Management Toolbar -->
+        <div class="data-toolbar">
+          <button id="import-btn" class="secondary-btn">📥 Import</button>
+          <input
+            type="file"
+            id="import-file"
+            accept=".json"
+            style="display: none"
+          />
+
+          <button id="export-btn" class="secondary-btn">Export</button>
+
+          <button id="load-sample-btn" class="secondary-btn">
+            Sample Data
+          </button>
+        </div>
+
+        <!-- Search and Sort Controls -->
+        <div class="controls">
+          <div class="search-box">
+            <label for="search-input"> Search (Regex):</label>
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Enter regex pattern..."
+            />
+            <label>
+              <input type="checkbox" id="case-sensitive" /> Case Sensitive
+            </label>
+            <p class="helper-text">
+              Use regex patterns to search. Examples: <code>coffee</code>,
+              <code>\.\d{2}\b</code> (amounts with cents)
+            </p>
+            <span id="search-error" role="alert" class="error-message"></span>
+          </div>
+
+          <div class="sort-controls">
+            <label for="sort-by">Sort by:</label>
+            <select id="sort-by">
+              <option value="date">Date</option>
+              <option value="description">Description</option>
+              <option value="amount">Amount</option>
+            </select>
+            <button id="sort-order-btn">↑ Ascending</button>
+          </div>
+        </div>
+
+        <!-- Transactions Table -->
+        <div id="transactions-container">
+          <p>
+            No transactions yet. Click "Add Transaction" above to get started!
+          </p>
+        </div>
+      </section>
+
+      <!-- Add/Edit From Section -->
+      <section id="form-section" style="display: none">
+        <h2 id="form-title">Add Transaction</h2>
+        <form id="transaction-form">
+          <!-- form fields -->
+        </form>
+      </section>
+
+      <!-- Settings Section -->
+      <section id="settings">
+        <h2>Settings</h2>
+
+        <!-- Budget Cap Setting -->
+        <div class="setting-group">
+          <h3>Budget Management</h3>
+          <label for="budget-cap-input">Monthly Budget Cap ($):</label>
+          <input
+            type="number"
+            id="budget-cap-input"
+            min="0"
+            step="0.01"
+            placeholder="e.g., 500.00"
+          />
+          <button id="save-budget-btn" class="secondary-btn">
+            Save Budget
+          </button>
+        </div>
+
+        <!-- Currency Settings -->
+        <div class="setting-group">
+          <h3>Currency Conversion</h3>
+          <p>Base: USD</p>
+          <label for="eur-rate">EUR Rate:</label>
+          <input type="number" id="eur-rate" step="0.01" value="0.85" min="0" />
+
+          <label for="gbp-rate">GBP Rate:</label>
+          <input type="number" id="gbp-rate" step="0.01" value="0.73" min="0" />
+
+          <button id="save-rates-btn" class="secondary-btn">Save Rates</button>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; 2025 Student Finance Tracker | Yonas Dejene</p>
+    </footer>
+  </body>
 </html>
